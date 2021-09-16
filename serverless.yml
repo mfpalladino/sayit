@@ -7,7 +7,7 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   region: us-east-1
   stage: dev
   lambdaHashingVersion: 20201221
@@ -34,9 +34,9 @@ functions:
     iamRoleStatements:
       - Effect: "Allow"
         Action:
-          - "states:StartExecution"
-        Resource:
-          - "*"    
+          - states:StartExecution
+        Resource: 
+          - "*"
     environment:
       INPUT_BUCKET_NAME: sayit.input.${self:custom.stage}
       INPUT_BUCKET_URL: http://s3.amazonaws.com/sayit.input.${self:custom.stage}/
@@ -44,15 +44,35 @@ functions:
 
   startTextAnalysis:
     handler: functions/start-text-analysis.handler
+    environment:
+      INPUT_BUCKET_URL: http://s3.amazonaws.com/sayit.input.${self:custom.stage}/
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - transcribe:StartTranscriptionJob
+        Resource: 
+          - "*"
 
   finishTextAnalysis:
     handler: functions/finish-text-analysis.handler
+    environment:
+      INPUT_BUCKET_URL: http://s3.amazonaws.com/sayit.input.${self:custom.stage}/
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - transcribe:GetTranscriptionJob
+        Resource: 
+          - "*"
 
   cutVideo:
     handler: functions/cut-video.handler
 
   mosaic:
     handler: functions/mosaic.handler
+    events:
+      - s3: 
+          bucket: sayit.tomerge.${self:custom.stage}
+          event: s3:ObjectCreated:*    
 
 stepFunctions:
   stateMachines:
@@ -76,14 +96,16 @@ stepFunctions:
           CutVideo:
             Type: Task
             Resource: !GetAtt cutVideo.Arn
-            Next: Mosaic
-          Mosaic:
-            Type: Task
-            Resource: !GetAtt mosaic.Arn
             End: true
+           
 
 resources:
   Resources:
+    Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: sayit.topublish.${self:custom.stage}
+
     VideosToMergeTable:
       Type: AWS::DynamoDB::Table
       Properties:
