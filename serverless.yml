@@ -32,7 +32,7 @@ functions:
           bucket: sayit.input.${self:custom.stage}
           event: s3:ObjectCreated:*    
     iamRoleStatements:
-      - Effect: "Allow"
+      - Effect: Allow
         Action:
           - states:StartExecution
         Resource: 
@@ -47,24 +47,24 @@ functions:
     environment:
       INPUT_BUCKET_URL: http://s3.amazonaws.com/sayit.input.${self:custom.stage}/
     iamRoleStatements:
-      - Effect: "Allow"
+      - Effect: Allow
         Action:
           - transcribe:StartTranscriptionJob
         Resource: 
           - "*"
-      - Effect: "Allow"
+      - Effect: Allow
         Action:
           - s3:GetObject
         Resource:
-          - "arn:aws:s3:::sayit.input.${self:custom.stage}"
-          - "arn:aws:s3:::sayit.input.${self:custom.stage}/*"
+          - arn:aws:s3:::sayit.input.${self:custom.stage}
+          - arn:aws:s3:::sayit.input.${self:custom.stage}/*
 
   finishTextAnalysis:
     handler: functions/finish-text-analysis.handler
     environment:
       INPUT_BUCKET_URL: http://s3.amazonaws.com/sayit.input.${self:custom.stage}/
     iamRoleStatements:
-      - Effect: "Allow"
+      - Effect: Allow
         Action:
           - transcribe:GetTranscriptionJob
         Resource: 
@@ -77,21 +77,21 @@ functions:
       TO_MERGE_BUCKET_NAME: sayit.tomerge.${self:custom.stage}
       TO_MERGE_TABLE_NAME: !Ref VideosToMergeTable
     iamRoleStatements:
-      - Effect: "Allow"
+      - Effect: Allow
         Action:
-          - 's3:GetObject'
+          - s3:GetObject
         Resource: 
           - arn:aws:s3:::sayit.input.${self:custom.stage}
           - arn:aws:s3:::sayit.input.${self:custom.stage}/*
-      - Effect: "Allow"
+      - Effect: Allow
         Action:
-          - 's3:PutObject'
+          - s3:PutObject
         Resource: 
           - arn:aws:s3:::sayit.tomerge.${self:custom.stage}
           - arn:aws:s3:::sayit.tomerge.${self:custom.stage}/*
-      - Effect: "Allow"
+      - Effect: Allow
         Action:
-          - 'dynamodb:PutItem'
+          - dynamodb:PutItem
         Resource: 
           - !GetAtt VideosToMergeTable.Arn
 
@@ -107,22 +107,22 @@ functions:
           bucket: sayit.tomerge.${self:custom.stage}
           event: s3:ObjectCreated:*
     iamRoleStatements:
-      - Effect: "Allow"
+      - Effect: Allow
         Action:
-          - 's3:GetObject'
+          - s3:GetObject
         Resource: 
           - arn:aws:s3:::sayit.tomerge.${self:custom.stage}
           - arn:aws:s3:::sayit.tomerge.${self:custom.stage}/*
-      - Effect: "Allow"
+      - Effect: Allow
         Action:
-          - 's3:PutObject'
+          - s3:PutObject
         Resource: 
           - arn:aws:s3:::sayit.topublish.${self:custom.stage}
           - arn:aws:s3:::sayit.topublish.${self:custom.stage}/*
-      - Effect: "Allow"
+      - Effect: Allow
         Action:
-          - 'dynamodb:Query'
-          - 'dynamodb:UpdateItem'
+          - dynamodb:Query
+          - dynamodb:UpdateItem
         Resource: 
           - !GetAtt VideosToMergeTable.Arn
           - !Join [ '/', [ !GetAtt VideosToMergeTable.Arn, 'index', '*' ] ]
