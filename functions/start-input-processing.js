@@ -11,7 +11,7 @@ module.exports.handler = async (event, context) => {
 
   const input = {
     inputObjectId,
-    transactionId
+    transactionId: inputObjectId
   }
   
   const params = {

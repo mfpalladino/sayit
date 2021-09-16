@@ -24,8 +24,6 @@ module.exports.handler = async (event) => {
     let firstPronunciationTime = -1
     let lastPronunciationTime = -1
 
-    console.log(getTranscriptionJobResultTranscript) 
-
     getTranscriptionJobResultTranscript.results.items.forEach((item) => {
       if (item.type === "pronunciation")
       {
@@ -37,8 +35,8 @@ module.exports.handler = async (event) => {
       }
     })
 
-    event.cutStartTime = firstPronunciationTime * 1000
-    event.cutDurationTime = lastPronunciationTime * 1000
+    event.cutStartTime = firstPronunciationTime
+    event.cutDurationTime = lastPronunciationTime
   }
 
   return event
