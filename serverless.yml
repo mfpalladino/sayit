@@ -52,7 +52,12 @@ functions:
           - transcribe:StartTranscriptionJob
         Resource: 
           - "*"
-
+      - Effect: "Allow"
+        Action:
+          - s3:GetObject
+        Resource:
+          - "arn:aws:s3:::sayit.input.${self:custom.stage}"
+          - "arn:aws:s3:::sayit.input.${self:custom.stage}/*"
   finishTextAnalysis:
     handler: functions/finish-text-analysis.handler
     environment:
