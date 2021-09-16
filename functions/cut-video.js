@@ -80,6 +80,8 @@ const cutVideo = (sourcePath, outputPath, startTime, duration) => {
 };
 
 const putCutItem = (id) => {
+    console.log('DB put item');
+
     let params = {
         TableName: TO_MERGE_TABLE,
         Item: {
@@ -92,13 +94,7 @@ const putCutItem = (id) => {
         }
     };
 
-    return ddb.putItem(params, function(err, data) {
-        if (err) {
-            console.log("DDB error", err);
-        } else {
-            console.log("DDB success", data);
-        }
-    }).promise();
+    return ddb.putItem(params).promise();
 };
 
 exports.handler = async (event, context) => {
