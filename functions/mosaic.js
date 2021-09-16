@@ -214,7 +214,8 @@ exports.handler = async (event, context) => {
         //subir no outro s3
         await uploadFileToS3(TO_PUBLISH_BUCKET, outputFileKey, outputFile);
     } catch(err){
-        console.log('An error occurred: ' + err.message);
+        if(err)
+            console.log('An error occurred: ' + err.message);
     }
 };
 

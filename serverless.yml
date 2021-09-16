@@ -3,6 +3,7 @@ frameworkVersion: "2"
 
 plugins:
   - serverless-iam-roles-per-function
+  - serverless-step-functions
 
 provider:
   name: aws
@@ -30,11 +31,56 @@ functions:
       - s3: 
           bucket: sayit.input.${self:custom.stage}
           event: s3:ObjectCreated:*    
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "states:StartExecution"
+        Resource:
+          - "*"    
     environment:
       INPUT_BUCKET_NAME: sayit.input.${self:custom.stage}
+      INPUT_BUCKET_URL: http://s3.amazonaws.com/sayit.input.${self:custom.stage}/
+      INPUT_PROCESSING_STATE_MACHINE_ARN: ${self:resources.Outputs.InputProcessingStateMachine.Value}
 
   startTextAnalysis:
     handler: functions/start-text-analysis.handler
+
+  finishTextAnalysis:
+    handler: functions/finish-text-analysis.handler
+
+  cutVideo:
+    handler: functions/cut-video.handler
+
+  mosaic:
+    handler: functions/mosaic.handler
+
+stepFunctions:
+  stateMachines:
+    inputProcessingStateMachine:
+      name: SayitInputProcessingStateMachine${self:custom.stage}
+      definition:
+        StartAt: StartTextAnalysis
+        States:
+          StartTextAnalysis:
+            Type: Task
+            Resource: !GetAtt startTextAnalysis.Arn
+            Next: Wait5Seconds
+          Wait5Seconds:
+            Type: Wait
+            Seconds: 5
+            Next: FinishTextAnalysis            
+          FinishTextAnalysis:
+            Type: Task
+            Resource: !GetAtt finishTextAnalysis.Arn
+            Next: CutVideo
+          CutVideo:
+            Type: Task
+            Resource: !GetAtt cutVideo.Arn
+            Next: Mosaic
+          Mosaic:
+            Type: Task
+            Resource: !GetAtt mosaic.Arn
+            End: true
 
 resources:
   Resources:
@@ -67,3 +113,8 @@ resources:
   Outputs:
     AwsRegion:
       Value: ${self:custom.region}
+
+    InputProcessingStateMachine:
+      Description: The ARN of the input processing state machine
+      Value:
+        Ref: SayitInputProcessingStateMachine${self:custom.stage}
