@@ -22,5 +22,8 @@
     "serverless": "2.56.0",
     "serverless-iam-roles-per-function": "^3.2.0",
     "serverless-step-functions": "^3.0.0"
+  },
+  "dependencies": {
+    "uuid": "^3.3.2"
   }
 }
