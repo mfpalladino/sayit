@@ -140,7 +140,7 @@ stepFunctions:
             Next: Wait5Seconds
           Wait5Seconds:
             Type: Wait
-            Seconds: 5
+            Seconds: 60
             Next: FinishTextAnalysis            
           FinishTextAnalysis:
             Type: Task
