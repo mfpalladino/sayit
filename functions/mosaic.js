@@ -15,15 +15,15 @@ const   fs = require('fs'),
 const   ffmpegPath = require('@ffmpeg-installer/ffmpeg').path,
         ffmpeg = require('fluent-ffmpeg');
         
-const   TO_MERGE_TABLE = process.env.TO_MERGE_TABLE,
+const   TO_MERGE_TABLE_NAME = process.env.TO_MERGE_TABLE_NAME,
         VIDEO_COUNT_TO_MERGE = process.env.VIDEO_COUNT_TO_MERGE,
-        TO_MERGE_BUCKET = process.env.TO_MERGE_BUCKET,
-        TO_PUBLISH_BUCKET = process.env.TO_PUBLISH_BUCKET;
+        TO_MERGE_BUCKET_NAME = process.env.TO_MERGE_BUCKET_NAME,
+        TO_PUBLISH_BUCKET_NAME = process.env.TO_PUBLISH_BUCKET_NAME;
 
-/*const   TO_MERGE_TABLE = "sayit-backend-dev-VideosToMergeTable-9OD70OQ11B8B",
+/*const   TO_MERGE_TABLE_NAME = "sayit-backend-dev-VideosToMergeTable-9OD70OQ11B8B",
         VIDEO_COUNT_TO_MERGE = 4,
-        TO_MERGE_BUCKET = "sayit.tomerge.dev",
-        TO_PUBLISH_BUCKET = "sayit.topublish.dev";*/
+        TO_MERGE_BUCKET_NAME = "sayit.tomerge.dev",
+        TO_PUBLISH_BUCKET_NAME = "sayit.topublish.dev";*/
 
 const   workdir = os.tmpdir();
 const { 
@@ -132,7 +132,7 @@ const getItemsToMerge = () => {
 
     var params = {
         IndexName: 'byIsMerged',
-        TableName: TO_MERGE_TABLE,
+        TableName: TO_MERGE_TABLE_NAME,
         ExpressionAttributeValues: {
             ":v1": {
               N: '0'
@@ -151,7 +151,7 @@ const updateItems = (ids) => {
     ids.forEach(function (val, index, array) {
         transactItems.push({
             Update: {
-                TableName: TO_MERGE_TABLE,
+                TableName: TO_MERGE_TABLE_NAME,
                 Key: { id: { S: val } },
                 UpdateExpression: 'SET #IsMerged = :true',
                 ExpressionAttributeNames: {
@@ -175,47 +175,42 @@ const updateItems = (ids) => {
 
 exports.handler = async (event, context) => {
 
-    try{
-        var itemsToMerge = await getItemsToMerge();
+    var itemsToMerge = await getItemsToMerge();
 
-        if(itemsToMerge.Count < VIDEO_COUNT_TO_MERGE){
-            console.log("Ainda não há itens suficientes para fazer o merge");
-            return;
-        }
-        
-        var inputFilesToMosaic = [];
-        var idsToUpdate = [];
-
-        //baixar itens do S3
-        for (const item of itemsToMerge.Items.slice(0, VIDEO_COUNT_TO_MERGE)) { //TODO: gambiarra pra só deixar passar adiante 4 vídeos
-
-            const itemId = item.id.S;
-            var filePath = path.join(workdir, itemId);
-            try{
-                await downloadFileFromS3(TO_MERGE_BUCKET, itemId, filePath);
-                inputFilesToMosaic.push(filePath);
-                idsToUpdate.push(itemId);
-            } catch(err){
-                console.log('An error occurred: ' + err.message);
-            }
-        }
-
-        //criar mosaico
-        const outputFileKey = uuidv4() + ".mp4";
-        const outputFile = path.join(workdir, outputFileKey);
-        await createMosaic(inputFilesToMosaic, outputFile);
-
-        //atualizar no dynamo
-        await updateItems(idsToUpdate);
-
-        //subir no outro s3
-        await uploadFileToS3(TO_PUBLISH_BUCKET, outputFileKey, outputFile);
-
-        console.log("finished");
-    } catch(err){
-        if(err)
-            console.log('An error occurred: ' + err.message);
+    if(itemsToMerge.Count < VIDEO_COUNT_TO_MERGE){
+        console.log("Ainda não há itens suficientes para fazer o merge");
+        return;
     }
+    
+    var inputFilesToMosaic = [];
+    var idsToUpdate = [];
+
+    //baixar itens do S3
+    for (const item of itemsToMerge.Items.slice(0, VIDEO_COUNT_TO_MERGE)) { //TODO: gambiarra pra só deixar passar adiante 4 vídeos
+
+        const itemId = item.id.S;
+        var filePath = path.join(workdir, itemId);
+        try{
+            await downloadFileFromS3(TO_MERGE_BUCKET_NAME, itemId, filePath);
+            inputFilesToMosaic.push(filePath);
+            idsToUpdate.push(itemId);
+        } catch(err){
+            console.log('An error occurred: ' + err.message);
+        }
+    }
+
+    //criar mosaico
+    const outputFileKey = uuidv4() + ".mp4";
+    const outputFile = path.join(workdir, outputFileKey);
+    await createMosaic(inputFilesToMosaic, outputFile);
+
+    //atualizar no dynamo
+    await updateItems(idsToUpdate);
+
+    //subir no outro s3
+    await uploadFileToS3(TO_PUBLISH_BUCKET_NAME, outputFileKey, outputFile);
+
+    console.log("finished");
 };
 
 /*
