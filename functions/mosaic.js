@@ -26,11 +26,8 @@ const   TO_MERGE_TABLE_NAME = process.env.TO_MERGE_TABLE_NAME,
         TO_PUBLISH_BUCKET_NAME = "sayit.topublish.dev";*/
 
 const   workdir = os.tmpdir();
-const { 
-    v4: uuidv4,
-  } = require('uuid');
 
-  const downloadFileFromS3 = (bucket, fileKey, filePath) => {
+const downloadFileFromS3 = (bucket, fileKey, filePath) => {
     console.log('downloading', bucket, fileKey, filePath);
     return new Promise(function (resolve, reject) {
         const file = fs.createWriteStream(filePath),
@@ -200,7 +197,7 @@ exports.handler = async (event, context) => {
     }
 
     //criar mosaico
-    const outputFileKey = uuidv4() + ".mp4";
+    const outputFileKey = context.awsRequestId + ".mp4";
     const outputFile = path.join(workdir, outputFileKey);
     await createMosaic(inputFilesToMosaic, outputFile);
 

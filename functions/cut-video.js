@@ -7,7 +7,6 @@ const pathToFfmpeg      = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg            = require('fluent-ffmpeg');
 const path              = require('path');
 const os                = require('os');
-const { v4: uuidv4 }    = require('uuid');
 const ddb               = new aws.DynamoDB();
 
 const OUTPUT_BUCKET  = process.env.TO_MERGE_BUCKET_NAME;
@@ -98,18 +97,17 @@ const putCutItem = (id) => {
 };
 
 exports.handler = async (event, context) => {
-    const key = event.key;
+    const key = event.inputObjectId;
     const cutStartTime = event.cutStartTime;
-    const cutEndTime = event.cutEndTime;
-    const id = uuidv4();
+    const cutDurationTime = event.cutDurationTime;
     const workdir = os.tmpdir();
-    const inputFile = path.join(workdir,  id + path.extname(key));
-    const outputFile = path.join(workdir, 'converted-' + id + '.mp4');
+    const inputFile = path.join(workdir,  key);
+    const outputFile = path.join(workdir, 'converted-' + key);
 
     console.log('cutting', INPUT_BUCKET, key, 'using', inputFile);
     
     await downloadFileFromS3(INPUT_BUCKET, key, inputFile);
-    await cutVideo(inputFile, outputFile, cutStartTime, cutEndTime);
+    await cutVideo(inputFile, outputFile, cutStartTime, cutDurationTime);
     await putCutItem(key);
     await uploadFileToS3(OUTPUT_BUCKET, key, outputFile, 'video/mp4');
 };
