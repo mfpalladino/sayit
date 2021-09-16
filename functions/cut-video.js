@@ -10,9 +10,9 @@ const os                = require('os');
 const { v4: uuidv4 }    = require('uuid');
 const ddb               = new aws.DynamoDB();
 
-const OUTPUT_BUCKET  = process.env.TO_MERGE_BUCKET;
-const INPUT_BUCKET   = process.env.INPUT_BUCKET;
-const TO_MERGE_TABLE = process.env.TO_MERGE_TABLE;
+const OUTPUT_BUCKET  = process.env.TO_MERGE_BUCKET_NAME;
+const INPUT_BUCKET   = process.env.INPUT_BUCKET_NAME;
+const TO_MERGE_TABLE = process.env.TO_MERGE_TABLE_NAME;
 
 const downloadFileFromS3  = (bucket, fileKey, filePath) => {
     console.log('downloading', bucket, fileKey, filePath);
@@ -102,32 +102,26 @@ const putCutItem = (id) => {
 };
 
 exports.handler = async (event, context) => {
-    try {
-        const key = event.key;
-        const cutStartTime = event.cutStartTime;
-        const cutEndTime = event.cutEndTime;
-        const id = uuidv4();
-        const workdir = os.tmpdir();
-        const inputFile = path.join(workdir,  id + path.extname(key));
-        const outputFile = path.join(workdir, 'converted-' + id + '.mp4');
+    const key = event.key;
+    const cutStartTime = event.cutStartTime;
+    const cutEndTime = event.cutEndTime;
+    const id = uuidv4();
+    const workdir = os.tmpdir();
+    const inputFile = path.join(workdir,  id + path.extname(key));
+    const outputFile = path.join(workdir, 'converted-' + id + '.mp4');
 
-        console.log('cutting', INPUT_BUCKET, key, 'using', inputFile);
-        
-        await downloadFileFromS3(INPUT_BUCKET, key, inputFile);
-        await cutVideo(inputFile, outputFile, cutStartTime, cutEndTime);
-        await putCutItem(key);
-        await uploadFileToS3(OUTPUT_BUCKET, key, outputFile, 'video/mp4');
-
-    } catch(err) {
-        if(err)
-        console.log('An error occurred: ' + err.message);
-    }
+    console.log('cutting', INPUT_BUCKET, key, 'using', inputFile);
+    
+    await downloadFileFromS3(INPUT_BUCKET, key, inputFile);
+    await cutVideo(inputFile, outputFile, cutStartTime, cutEndTime);
+    await putCutItem(key);
+    await uploadFileToS3(OUTPUT_BUCKET, key, outputFile, 'video/mp4');
 };
 
-(async () => {
-    try{
-        await exports.handler(null, null);
-    } catch(err){
-        console.log('An error occurred: ' + err.message);
-    }
-})();
+// (async () => {
+//     try{
+//         await exports.handler(null, null);
+//     } catch(err){
+//         console.log('An error occurred: ' + err.message);
+//     }
+// })();

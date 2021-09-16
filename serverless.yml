@@ -66,13 +66,57 @@ functions:
 
   cutVideo:
     handler: functions/cut-video.handler
+    environment:
+      INPUT_BUCKET_NAME: sayit.input.${self:custom.stage}
+      TO_MERGE_BUCKET_NAME: sayit.tomerge.${self:custom.stage}
+      TO_MERGE_TABLE_NAME: !Ref VideosToMergeTable
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - 's3:GetObject'
+        Resource: 
+          - sayit.input.${self:custom.stage}
+          - sayit.input.${self:custom.stage}/*
+      - Effect: "Allow"
+        Action:
+          - 's3:PutObject'
+        Resource: 
+          - sayit.tomerge.${self:custom.stage}
+      - Effect: "Allow"
+        Action:
+          - 'dynamodb:PutItem'
+        Resource: 
+          - !GetAtt VideosToMergeTable.Arn
 
   mosaic:
     handler: functions/mosaic.handler
+    environment:
+      TO_PUBLISH_BUCKET_NAME: sayit.topublish.${self:custom.stage}
+      TO_MERGE_BUCKET_NAME: sayit.tomerge.${self:custom.stage}
+      TO_MERGE_TABLE_NAME: !Ref VideosToMergeTable
+      VIDEO_COUNT_TO_MERGE: 4
     events:
       - s3: 
           bucket: sayit.tomerge.${self:custom.stage}
-          event: s3:ObjectCreated:*    
+          event: s3:ObjectCreated:*
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - 's3:GetObject'
+        Resource: 
+          - sayit.tomerge.${self:custom.stage}
+          - sayit.tomerge.${self:custom.stage}/*
+      - Effect: "Allow"
+        Action:
+          - 's3:PutObject'
+        Resource: 
+          - sayit.topublish.${self:custom.stage}
+      - Effect: "Allow"
+        Action:
+          - 'dynamodb:Query'
+          - 'dynamodb:UpdateItem'
+        Resource: 
+          - !GetAtt VideosToMergeTable.Arn
 
 stepFunctions:
   stateMachines:
