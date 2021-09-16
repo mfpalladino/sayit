@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "kumar-harsh.graphql-for-vscode",
+        "esbenp.prettier-vscode",
+        "threadheap.serverless-ide-vscode",
+        "bradlc.vscode-tailwindcss",
+        "sodatea.velocity",
+        "octref.vetur" 
+    ]
+}

@@ -1,0 +1,38 @@
+service: sayit-backend
+frameworkVersion: "2"
+
+plugins:
+  - serverless-iam-roles-per-function
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-east-1
+  stage: dev
+  lambdaHashingVersion: 20201221
+  environment:
+    STAGE: ${self:custom.stage}
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+
+package:
+  patterns:
+    - "!package-lock.json"
+    - "!package.json"
+
+custom:
+  region: ${opt:region, self:provider.region}
+  stage: ${opt:stage, self:provider.stage}
+
+functions:
+  startsTextAnalysis:
+    handler: functions/starts-text-analysis.handler
+    events:
+      - s3: 
+          bucket: sayit.input
+          event: s3:ObjectCreated:*    
+
+resources:
+
+  Outputs:
+    AwsRegion:
+      Value: ${self:custom.region}

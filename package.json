@@ -1,0 +1,25 @@
+{
+  "name": "sayit-backend",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "sls": "sls",
+    "deploy": "sls deploy",
+    "remove": "sls remove",
+    "format": "prettier --write '**/*.js'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^27.0.1",
+    "aws-sdk": "^2.976.0",
+    "dotenv": "^8.6.0",
+    "jest": "^27.0.6",
+    "prettier": "^2.4.0",
+    "serverless": "2.56.0",
+    "serverless-iam-roles-per-function": "^3.2.0"
+  }
+}

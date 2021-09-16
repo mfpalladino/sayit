@@ -102,3 +102,7 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Ignore serverless manifest files
+serverless.manifest.json
+.serverless/manifest.json
