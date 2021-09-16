@@ -37,7 +37,33 @@ functions:
     handler: functions/start-text-analysis.handler
 
 resources:
-
+  Resources:
+    VideosToMergeTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: "S"
+          - AttributeName: isMerged
+            AttributeType: "N"
+        Tags:
+          - Key: Environment
+            Value: ${self:custom.stage}
+          - Key: Name
+            Value: sayit-videos-to-merged-table
+        GlobalSecondaryIndexes:
+          - IndexName: byIsMerged
+            KeySchema:
+              - AttributeName: isMerged
+                KeyType: HASH
+              - AttributeName: id
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
   Outputs:
     AwsRegion:
       Value: ${self:custom.region}
