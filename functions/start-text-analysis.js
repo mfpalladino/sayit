@@ -8,16 +8,18 @@ module.exports.handler = async (event) => {
 
   console.log(event)
 
-  console.log(transactionId)
-  console.log(inputObjectId)
-  console.log(INPUT_BUCKET_URL)
-
   const transactionId = event.transactionId
   const inputObjectId = event.inputObjectId
+  const url = `${INPUT_BUCKET_URL}${inputObjectId}`
+
+  console.log(transactionId)
+  console.log(inputObjectId)
+  console.log(url)
+  console.log(INPUT_BUCKET_URL)
 
   var params = {
     Media: { 
-      MediaFileUri: `${INPUT_BUCKET_URL}/${inputObjectId}`
+      MediaFileUri: url
     },
     TranscriptionJobName: transactionId,
     LanguageCode: "pt-BR"
