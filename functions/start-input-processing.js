@@ -1,14 +1,13 @@
 const aws = require('aws-sdk')
-const { v4: uuidv4 } = require('uuid')
 
 const { INPUT_PROCESSING_STATE_MACHINE_ARN } = process.env
 
 const stepfunctions = new aws.StepFunctions()
 
-module.exports.handler = async (event) => {
+module.exports.handler = async (event, context) => {
 
   const inputObjectId = event.Records[0].s3.object.key
-  const transactionId = uuidv4()
+  const transactionId = context.awsRequestId
 
   const input = {
     inputObjectId,
