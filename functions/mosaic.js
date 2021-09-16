@@ -155,8 +155,8 @@ exports.handler = async (event, context) => {
         };
 
         dynamodb.transactWriteItems(params, function(err, data) {
-            if (err) console.log(err, err.stack); // an error occurred
-            else     console.log(data);           // successful response
+            if (err) console.log(err, err.stack);
+            else     console.log(data);
         });
     };
 
@@ -165,6 +165,12 @@ exports.handler = async (event, context) => {
     if(itemsToMerge.Count < VIDEO_COUNT_TO_MERGE)
         return;
     
+    //baixar itens do S3
 
+    //chamar createMosaic
+
+    //atualizar no dynamo
+
+    //subir no outro s3
 
 };
