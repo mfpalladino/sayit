@@ -24,6 +24,8 @@
     "serverless-step-functions": "^3.0.0"
   },
   "dependencies": {
-    "uuid": "^3.3.2"
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "fluent-ffmpeg": "^2.1.2",
+  	"uuid": "^8.3.2"
   }
 }
