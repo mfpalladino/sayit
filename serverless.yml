@@ -80,13 +80,13 @@ functions:
         Action:
           - 's3:GetObject'
         Resource: 
-          - sayit.input.${self:custom.stage}
-          - sayit.input.${self:custom.stage}/*
+          - arn:aws:s3:::sayit.input.${self:custom.stage}
+          - arn:aws:s3:::sayit.input.${self:custom.stage}/*
       - Effect: "Allow"
         Action:
           - 's3:PutObject'
         Resource: 
-          - sayit.tomerge.${self:custom.stage}
+          - arn:aws:s3:::sayit.tomerge.${self:custom.stage}
       - Effect: "Allow"
         Action:
           - 'dynamodb:PutItem'
@@ -109,13 +109,13 @@ functions:
         Action:
           - 's3:GetObject'
         Resource: 
-          - sayit.tomerge.${self:custom.stage}
-          - sayit.tomerge.${self:custom.stage}/*
+          - arn:aws:s3:::sayit.tomerge.${self:custom.stage}
+          - arn:aws:s3:::sayit.tomerge.${self:custom.stage}/*
       - Effect: "Allow"
         Action:
           - 's3:PutObject'
         Resource: 
-          - sayit.topublish.${self:custom.stage}
+          - arn:aws:s3:::sayit.topublish.${self:custom.stage}
       - Effect: "Allow"
         Action:
           - 'dynamodb:Query'
