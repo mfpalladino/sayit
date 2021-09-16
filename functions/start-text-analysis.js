@@ -2,7 +2,7 @@ const aws = require('aws-sdk')
 
 const { INPUT_BUCKET_URL } = process.env
 
-const transcribeservice = new AWS.TranscribeService();
+const transcribeservice = new aws.TranscribeService();
 
 module.exports.handler = async (event) => {
 
@@ -12,8 +12,8 @@ module.exports.handler = async (event) => {
   console.log(inputObjectId)
   console.log(INPUT_BUCKET_URL)
 
-  const transactionId = event.source.transactionId
-  const inputObjectId = event.source.inputObjectId
+  const transactionId = event.transactionId
+  const inputObjectId = event.inputObjectId
 
   var params = {
     Media: { 
