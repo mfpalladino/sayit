@@ -15,10 +15,15 @@ const   fs = require('fs'),
 const   ffmpegPath = require('@ffmpeg-installer/ffmpeg').path,
         ffmpeg = require('fluent-ffmpeg');
         
-const   TO_MERGE_TABLE = "sayit-backend-dev-VideosToMergeTable-9OD70OQ11B8B",//process.env.TO_MERGE_TABLE,
-        VIDEO_COUNT_TO_MERGE = 4,//process.env.VIDEO_COUNT_TO_MERGE,
-        TO_MERGE_BUCKET = "sayit.tomerge.dev",//process.env.TO_MERGE_BUCKET,
-        TO_PUBLISH_BUCKET = "sayit.topublish.dev";//process.env.TO_PUBLISH_BUCKET;
+const   TO_MERGE_TABLE = process.env.TO_MERGE_TABLE,
+        VIDEO_COUNT_TO_MERGE = process.env.VIDEO_COUNT_TO_MERGE,
+        TO_MERGE_BUCKET = process.env.TO_MERGE_BUCKET,
+        TO_PUBLISH_BUCKET = process.env.TO_PUBLISH_BUCKET;
+
+/*const   TO_MERGE_TABLE = "sayit-backend-dev-VideosToMergeTable-9OD70OQ11B8B",
+        VIDEO_COUNT_TO_MERGE = 4,
+        TO_MERGE_BUCKET = "sayit.tomerge.dev",
+        TO_PUBLISH_BUCKET = "sayit.topublish.dev";*/
 
 const   workdir = os.tmpdir();
 const { 
@@ -64,8 +69,7 @@ const createMosaic = (inputFiles, outputFile) => {
 
     var videoInfo = [];
 
-    // Parse arguments
-    // var args = process.argv.slice(2);
+    // Parse input files
     inputFiles.forEach(function (val, index, array) {
         var filename = val;
         console.log(index + ': Input File ... ' + filename);
@@ -106,8 +110,6 @@ const createMosaic = (inputFiles, outputFile) => {
         filter: 'amix', options: { inputs: videoInfo.length, duration: 'shortest' }
     })
 
-    //var outFile = 'out.mp4';
-
     return new Promise(function (resolve, reject) {
         command
             .complexFilter(complexFilter, 'base4')
@@ -139,17 +141,7 @@ const getItemsToMerge = () => {
         KeyConditionExpression: "isMerged = :v1", 
     };
 
-    return new Promise(function (resolve, reject) {
-        ddb.query(params, function(err, data) {
-            if(err){
-                console.log('An error occurred: ' + err.message);
-                reject();
-            }
-            else{
-                resolve(data);
-            }
-        });
-    });
+    return ddb.query(params).promise();
 };
 
 const updateItems = (ids) => {
@@ -161,8 +153,15 @@ const updateItems = (ids) => {
             Update: {
                 TableName: TO_MERGE_TABLE,
                 Key: { id: { S: val } },
-                //ConditionExpression: 'isMerged = 0',
-                UpdateExpression: 'set isMerged = 1'
+                UpdateExpression: 'SET #IsMerged = :true',
+                ExpressionAttributeNames: {
+                    '#IsMerged' : 'isMerged'
+                },
+                ExpressionAttributeValues: {
+                    ':true' : {
+                        N: '1'
+                    }
+                }
             }
         });
     });
@@ -188,23 +187,21 @@ exports.handler = async (event, context) => {
         var idsToUpdate = [];
 
         //baixar itens do S3
-        itemsToMerge.Items.forEach(async function (val, index, array) {
+        for (const item of itemsToMerge.Items.slice(0, VIDEO_COUNT_TO_MERGE)) { //TODO: gambiarra pra só deixar passar adiante 4 vídeos
 
-            if(index > 3) //TODO: gambiarra pra só deixar passar adiante 4 vídeos
-                return;
-
-            var filePath = path.join(workdir, val);
+            const itemId = item.id.S;
+            var filePath = path.join(workdir, itemId);
             try{
-                await downloadFileFromS3(TO_MERGE_BUCKET, val.Id, filePath);
+                await downloadFileFromS3(TO_MERGE_BUCKET, itemId, filePath);
                 inputFilesToMosaic.push(filePath);
-                idsToUpdate.push(val.Id);
+                idsToUpdate.push(itemId);
             } catch(err){
                 console.log('An error occurred: ' + err.message);
             }
-        });
+        }
 
         //criar mosaico
-        const outputFileKey = uuidv4();
+        const outputFileKey = uuidv4() + ".mp4";
         const outputFile = path.join(workdir, outputFileKey);
         await createMosaic(inputFilesToMosaic, outputFile);
 
@@ -213,12 +210,15 @@ exports.handler = async (event, context) => {
 
         //subir no outro s3
         await uploadFileToS3(TO_PUBLISH_BUCKET, outputFileKey, outputFile);
+
+        console.log("finished");
     } catch(err){
         if(err)
             console.log('An error occurred: ' + err.message);
     }
 };
 
+/*
 (async () => {
     try{
         await exports.handler(null, null);
@@ -226,3 +226,4 @@ exports.handler = async (event, context) => {
         console.log('An error occurred: ' + err.message);
     }
 })();
+*/
