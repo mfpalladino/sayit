@@ -24,12 +24,17 @@ custom:
   stage: ${opt:stage, self:provider.stage}
 
 functions:
-  startsTextAnalysis:
-    handler: functions/starts-text-analysis.handler
+  startInputProcessing:
+    handler: functions/start-input-processing.handler
     events:
       - s3: 
-          bucket: sayit.input
+          bucket: sayit.input.${self:custom.stage}
           event: s3:ObjectCreated:*    
+    environment:
+      INPUT_BUCKET_NAME: sayit.input.${self:custom.stage}
+
+  startTextAnalysis:
+    handler: functions/start-text-analysis.handler
 
 resources:
 
