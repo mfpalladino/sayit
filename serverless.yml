@@ -58,6 +58,7 @@ functions:
         Resource:
           - "arn:aws:s3:::sayit.input.${self:custom.stage}"
           - "arn:aws:s3:::sayit.input.${self:custom.stage}/*"
+
   finishTextAnalysis:
     handler: functions/finish-text-analysis.handler
     environment:
@@ -124,6 +125,7 @@ functions:
           - 'dynamodb:UpdateItem'
         Resource: 
           - !GetAtt VideosToMergeTable.Arn
+          - !Join [ '/', [ !GetAtt VideosToMergeTable.Arn, 'index', '*' ] ]
 
 stepFunctions:
   stateMachines:
@@ -148,7 +150,6 @@ stepFunctions:
             Type: Task
             Resource: !GetAtt cutVideo.Arn
             End: true
-           
 
 resources:
   Resources:
