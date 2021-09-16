@@ -97,9 +97,9 @@ const putCutItem = (id) => {
 };
 
 exports.handler = async (event, context) => {
-    const key = event.key;
+    const key = event.inputObjectId;
     const cutStartTime = event.cutStartTime;
-    const cutEndTime = event.cutEndTime;
+    const cutDurationTime = event.cutDurationTime;
     const workdir = os.tmpdir();
     const inputFile = path.join(workdir,  key);
     const outputFile = path.join(workdir, 'converted-' + key);
@@ -107,7 +107,7 @@ exports.handler = async (event, context) => {
     console.log('cutting', INPUT_BUCKET, key, 'using', inputFile);
     
     await downloadFileFromS3(INPUT_BUCKET, key, inputFile);
-    await cutVideo(inputFile, outputFile, cutStartTime, cutEndTime);
+    await cutVideo(inputFile, outputFile, cutStartTime, cutDurationTime);
     await putCutItem(key);
     await uploadFileToS3(OUTPUT_BUCKET, key, outputFile, 'video/mp4');
 };
