@@ -87,6 +87,7 @@ functions:
           - 's3:PutObject'
         Resource: 
           - arn:aws:s3:::sayit.tomerge.${self:custom.stage}
+          - arn:aws:s3:::sayit.tomerge.${self:custom.stage}/*
       - Effect: "Allow"
         Action:
           - 'dynamodb:PutItem'
@@ -116,6 +117,7 @@ functions:
           - 's3:PutObject'
         Resource: 
           - arn:aws:s3:::sayit.topublish.${self:custom.stage}
+          - arn:aws:s3:::sayit.topublish.${self:custom.stage}/*
       - Effect: "Allow"
         Action:
           - 'dynamodb:Query'
