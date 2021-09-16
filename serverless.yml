@@ -123,6 +123,7 @@ functions:
           - 'dynamodb:UpdateItem'
         Resource: 
           - !GetAtt VideosToMergeTable.Arn
+          - !Join [ '/', [ !GetAtt VideosToMergeTable.Arn, 'index', '*' ] ]
 
 stepFunctions:
   stateMachines:
