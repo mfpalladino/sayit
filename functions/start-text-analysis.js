@@ -20,9 +20,13 @@ module.exports.handler = async (event) => {
     LanguageCode: "pt-BR"
   }
 
+  event.states = {
+    startTextAnalysis: false
+  }
+
   await transcribeservice.startTranscriptionJob(params, (err) => {
-    if (err) 
-      throw Error(`err while executing step function ${err.stack}`)
+    if (!err) 
+      event.states.startTextAnalysis = true
   }).promise()
 
   return event
