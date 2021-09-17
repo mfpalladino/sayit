@@ -77,8 +77,8 @@ const createMosaic = (inputFiles, outputFile) => {
         command = command.addInput(filename);
     });	
 
-    const linhas = 5;
-    const colunas = 5;
+    const linhas = 4;
+    const colunas = 4;
 
     for(var i = 0; i < inputFiles.length; i++){
 
@@ -114,9 +114,9 @@ const createMosaic = (inputFiles, outputFile) => {
     })
 
     return new Promise(function (resolve, reject) {
-        
+        console.log(JSON.stringify(complexFilter));
         command
-            .complexFilter(complexFilter, 'base25') //TODO:
+            .complexFilter(complexFilter, 'base16') //TODO:
             .save(outputFile)
             .on('error', function(err) {
                 console.log('An error occurred: ' + err.message);
@@ -222,32 +222,32 @@ exports.handler = async (event, context) => {
     try{
         //await exports.handler(null, null);
         await createMosaic([
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4"            
-        ], 'C:/Users/GustavoCarpaneses/Downloads/New folder (3)/out.mp4')
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/0c2197b4-1173-43cf-bd5b-542f8bdb26a9.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/0da1786a-dacb-4a57-925f-2007b29a8b0a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/1b3dadee-b806-4a61-8a22-598fc6519056.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/1c6a68079-7146-4ce3-9dd2-178cffc628d0.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/1eab677d6-1815-4117-9f7e-aee3a9623bb7.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/1ed1e632f-0c66-4129-9c68-1d81f25e0b32.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/10c2197b4-1173-43cf-bd5b-542f8bdb26a9.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/10da1786a-dacb-4a57-925f-2007b29a8b0a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/21b3dadee-b806-4a61-8a22-598fc6519056.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/21c6a68079-7146-4ce3-9dd2-178cffc628d0.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/21eab677d6-1815-4117-9f7e-aee3a9623bb7.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/21ed1e632f-0c66-4129-9c68-1d81f25e0b32.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/210c2197b4-1173-43cf-bd5b-542f8bdb26a9.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/210da1786a-dacb-4a57-925f-2007b29a8b0a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/308cc8a5-83ea-492d-8583-a5539542f08d.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/875f2144-40bc-48ec-aa92-e26083cf2a5a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/1308cc8a5-83ea-492d-8583-a5539542f08d.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/1875f2144-40bc-48ec-aa92-e26083cf2a5a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/3210c2197b4-1173-43cf-bd5b-542f8bdb26a9.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/3210da1786a-dacb-4a57-925f-2007b29a8b0a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/21308cc8a5-83ea-492d-8583-a5539542f08d.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/21875f2144-40bc-48ec-aa92-e26083cf2a5a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/b3dadee-b806-4a61-8a22-598fc6519056.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/c6a68079-7146-4ce3-9dd2-178cffc628d0.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/Teste Final/eab677d6-1815-4117-9f7e-aee3a9623bb7.mp4"           
+        ], 'C:/Users/GustavoCarpaneses/Downloads/Teste Final/out.mp4')
     } catch(err){
         console.log('An error occurred: ' + err.message);
     }
