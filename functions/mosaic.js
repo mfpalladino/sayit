@@ -201,11 +201,11 @@ exports.handler = async (event, context) => {
     const outputFile = path.join(workdir, outputFileKey);
     await createMosaic(inputFilesToMosaic, outputFile);
 
-    //atualizar no dynamo
-    await updateItems(idsToUpdate);
-
     //subir no outro s3
     await uploadFileToS3(TO_PUBLISH_BUCKET_NAME, outputFileKey, outputFile);
+
+    //atualizar no dynamo
+    await updateItems(idsToUpdate);
 
     console.log("finished");
 };
