@@ -77,8 +77,8 @@ const createMosaic = (inputFiles, outputFile) => {
         command = command.addInput(filename);
     });	
 
-    const linhas = 6;
-    const colunas = 6;
+    const linhas = 5;
+    const colunas = 5;
 
     for(var i = 0; i < inputFiles.length; i++){
 
