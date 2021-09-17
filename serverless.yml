@@ -103,7 +103,7 @@ functions:
       TO_PUBLISH_BUCKET_NAME: sayit.topublish.${self:custom.stage}
       TO_MERGE_BUCKET_NAME: sayit.tomerge.${self:custom.stage}
       TO_MERGE_TABLE_NAME: !Ref VideosToMergeTable
-      VIDEO_COUNT_TO_MERGE: 16
+      VIDEO_COUNT_TO_MERGE: 25
     events:
       - s3: 
           bucket: sayit.tomerge.${self:custom.stage}

@@ -77,8 +77,8 @@ const createMosaic = (inputFiles, outputFile) => {
         command = command.addInput(filename);
     });	
 
-    const linhas = 4;
-    const colunas = 4;
+    const linhas = 5;
+    const colunas = 5;
 
     for(var i = 0; i < inputFiles.length; i++){
 
@@ -116,7 +116,7 @@ const createMosaic = (inputFiles, outputFile) => {
     return new Promise(function (resolve, reject) {
         console.log(JSON.stringify(complexFilter));
         command
-            .complexFilter(complexFilter, 'base16') //TODO:
+            .complexFilter(complexFilter, 'base25') //TODO:
             .save(outputFile)
             .on('error', function(err) {
                 console.log('An error occurred: ' + err.message);
@@ -217,7 +217,7 @@ exports.handler = async (event, context) => {
     console.log("finished");
 };
 
-/*
+
 (async () => {
     try{
         //await exports.handler(null, null);
@@ -252,4 +252,3 @@ exports.handler = async (event, context) => {
         console.log('An error occurred: ' + err.message);
     }
 })();
-*/
