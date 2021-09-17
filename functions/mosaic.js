@@ -116,7 +116,7 @@ const createMosaic = (inputFiles, outputFile) => {
     return new Promise(function (resolve, reject) {
         
         command
-            .complexFilter(complexFilter, 'base36') //TODO:
+            .complexFilter(complexFilter, 'base' + VIDEO_COUNT_TO_MERGE) //TODO:
             .save(outputFile)
             .on('error', function(err) {
                 console.log('An error occurred: ' + err.message);
