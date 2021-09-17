@@ -116,7 +116,7 @@ const createMosaic = (inputFiles, outputFile) => {
     return new Promise(function (resolve, reject) {
         
         command
-            .complexFilter(complexFilter, 'base' + VIDEO_COUNT_TO_MERGE) //TODO:
+            .complexFilter(complexFilter, 'base25') //TODO:
             .save(outputFile)
             .on('error', function(err) {
                 console.log('An error occurred: ' + err.message);
@@ -217,7 +217,7 @@ exports.handler = async (event, context) => {
     console.log("finished");
 };
 
-/*
+
 (async () => {
     try{
         //await exports.handler(null, null);
@@ -246,21 +246,9 @@ exports.handler = async (event, context) => {
             "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
             "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
             "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
-            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4"
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4"            
         ], 'C:/Users/GustavoCarpaneses/Downloads/New folder (3)/out.mp4')
     } catch(err){
         console.log('An error occurred: ' + err.message);
     }
 })();
-*/
