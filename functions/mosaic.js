@@ -110,7 +110,7 @@ const createMosaic = (inputFiles, outputFile) => {
 
     //add sound
     complexFilter.push({
-        filter: 'amix', options: { inputs: videoInfo.length, duration: 'shortest' }
+        filter: 'amix', options: { inputs: videoInfo.length, duration: 'longest' }
     })
 
     return new Promise(function (resolve, reject) {
