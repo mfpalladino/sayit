@@ -98,6 +98,7 @@ functions:
   mosaic:
     handler: functions/mosaic.handler
     reservedConcurrency: 1
+    timeout: 120
     environment:
       TO_PUBLISH_BUCKET_NAME: sayit.topublish.${self:custom.stage}
       TO_MERGE_BUCKET_NAME: sayit.tomerge.${self:custom.stage}
