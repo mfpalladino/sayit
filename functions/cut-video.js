@@ -109,7 +109,7 @@ exports.handler = async (event, context) => {
     await downloadFileFromS3(INPUT_BUCKET, key, inputFile);
     await cutVideo(inputFile, outputFile, cutStartTime, cutDurationTime);
     await putCutItem(key);
-    await uploadFileToS3(OUTPUT_BUCKET, key, outputFile, 'video/mp4');
+    await uploadFileToS3(OUTPUT_BUCKET, key, outputFile);
 };
 
 // (async () => {
