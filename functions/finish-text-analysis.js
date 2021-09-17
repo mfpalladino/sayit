@@ -37,8 +37,8 @@ module.exports.handler = async (event) => {
       }
     })
 
-    event.cutStartTime = firstPronunciationTime * 0.75
-    event.cutDurationTime = lastPronunciationTime * 1.25
+    event.cutStartTime = firstPronunciationTime * 0.6
+    event.cutDurationTime = lastPronunciationTime * 1.4
 
     event.states.finishTextAnalysis = true
   }

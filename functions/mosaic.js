@@ -97,14 +97,14 @@ const createMosaic = (inputFiles, outputFile) => {
     // Build Mosaic, block by block
     videoInfo.forEach(function (val, index, array) {
         complexFilter.push({
-            filter: 'overlay', options: { shortest:0, x: val.coord.x, y: val.coord.y },
+            filter: 'overlay', options: { shortest:1, x: val.coord.x, y: val.coord.y },
             inputs: ['base'+index, 'block'+index], outputs: 'base'+(index+1)
         });
     });
 
     //add sound
     complexFilter.push({
-        filter: 'amix', options: { inputs: videoInfo.length, duration: 'longest' }
+        filter: 'amix', options: { inputs: videoInfo.length, duration: 'shortest' }
     })
 
     return new Promise(function (resolve, reject) {
