@@ -217,7 +217,7 @@ exports.handler = async (event, context) => {
     console.log("finished");
 };
 
-
+/*
 (async () => {
     try{
         //await exports.handler(null, null);
@@ -252,3 +252,4 @@ exports.handler = async (event, context) => {
         console.log('An error occurred: ' + err.message);
     }
 })();
+*/
