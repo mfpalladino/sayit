@@ -62,7 +62,7 @@ const createMosaic = (inputFiles, outputFile) => {
     var command = ffmpeg();
 
     // Change this to the desired output resolution  
-    var x=640, y=480;
+    var largura=640, altura=480;
 
     var videoInfo = [];
 
@@ -77,19 +77,25 @@ const createMosaic = (inputFiles, outputFile) => {
         command = command.addInput(filename);
     });	
 
-    //TODO: montar um algoritmo mais dinâmico, caso tenha +/- que 4 vídeos
-    videoInfo[0].coord = { x: 0, y: 0 };
-    videoInfo[1].coord = { x: x/2, y: 0 };
-    videoInfo[2].coord = { x: 0, y: y/2 };
-    videoInfo[3].coord = { x: x/2, y: y/2 };
+    const linhas = 6;
+    const colunas = 6;
+
+    for(var i = 0; i < inputFiles.length; i++){
+
+        let linha = Math.floor(i / colunas);
+        let x = (i - colunas * linha) * largura / colunas;
+        let y = linha * altura / linhas;
+
+        videoInfo[i].coord = { x, y };
+    }
 
     var complexFilter = [];
-    complexFilter.push('nullsrc=size=' + x + 'x' + y + ' [base0]');
+    complexFilter.push('nullsrc=size=' + largura + 'x' + altura + ' [base0]');
 
     // Scale each video
     videoInfo.forEach(function (val, index, array) {
         complexFilter.push({
-            filter: 'setpts=PTS-STARTPTS, scale', options: [x/2, y/2], //TODO: melhorar scale caso tenha +/- que 4 vídeos
+            filter: 'setpts=PTS-STARTPTS, scale', options: [largura/colunas, altura/linhas],
             inputs: index+':v', outputs: 'block'+index
         });
     });
@@ -108,8 +114,9 @@ const createMosaic = (inputFiles, outputFile) => {
     })
 
     return new Promise(function (resolve, reject) {
+        
         command
-            .complexFilter(complexFilter, 'base4')
+            .complexFilter(complexFilter, 'base36') //TODO:
             .save(outputFile)
             .on('error', function(err) {
                 console.log('An error occurred: ' + err.message);
@@ -213,7 +220,45 @@ exports.handler = async (event, context) => {
 /*
 (async () => {
     try{
-        await exports.handler(null, null);
+        //await exports.handler(null, null);
+        await createMosaic([
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4",
+            "C:/Users/GustavoCarpaneses/Downloads/New folder (3)/2ae1517f-a0e6-4704-98c5-221d2cf9c89a.mp4"
+        ], 'C:/Users/GustavoCarpaneses/Downloads/New folder (3)/out.mp4')
     } catch(err){
         console.log('An error occurred: ' + err.message);
     }
