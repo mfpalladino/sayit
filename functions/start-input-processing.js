@@ -7,11 +7,11 @@ const stepfunctions = new aws.StepFunctions()
 module.exports.handler = async (event, context) => {
 
   const inputObjectId = event.Records[0].s3.object.key
-  const transactionId = context.awsRequestId
+  const transactionId = inputObjectId
 
   const input = {
     inputObjectId,
-    transactionId: inputObjectId
+    transactionId: transactionId
   }
   
   const params = {
