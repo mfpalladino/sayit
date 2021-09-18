@@ -1,11 +1,10 @@
-const aws = require('aws-sdk')
+const aws = require("aws-sdk")
 
 const { INPUT_BUCKET_URL } = process.env
 
-const transcribeservice = new aws.TranscribeService();
+const transcribeservice = new aws.TranscribeService()
 
 module.exports.handler = async (event) => {
-
   console.log(event)
 
   const transactionId = event.transactionId
@@ -13,21 +12,22 @@ module.exports.handler = async (event) => {
   const url = `${INPUT_BUCKET_URL}${inputObjectId}`
 
   var params = {
-    Media: { 
-      MediaFileUri: url
+    Media: {
+      MediaFileUri: url,
     },
     TranscriptionJobName: transactionId,
-    LanguageCode: "pt-BR"
+    LanguageCode: "pt-BR",
   }
 
   event.states = {
-    startTextAnalysis: false
+    startTextAnalysis: false,
   }
 
-  await transcribeservice.startTranscriptionJob(params, (err) => {
-    if (!err) 
-      event.states.startTextAnalysis = true
-  }).promise()
+  await transcribeservice
+    .startTranscriptionJob(params, (err) => {
+      if (!err) event.states.startTextAnalysis = true
+    })
+    .promise()
 
   return event
 }

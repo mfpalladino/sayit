@@ -1,39 +1,41 @@
-const aws = require('aws-sdk')
-const fetch = require('node-fetch')
+const aws = require("aws-sdk")
+const fetch = require("node-fetch")
 
-const transcribeservice = new aws.TranscribeService();
+const transcribeservice = new aws.TranscribeService()
 
 module.exports.handler = async (event) => {
-
   const transactionId = event.transactionId
 
   var params = {
-    TranscriptionJobName: transactionId
-  };
+    TranscriptionJobName: transactionId,
+  }
 
-  const getTranscriptionJobResult = await transcribeservice.getTranscriptionJob(params, (err) => {
-    if (err) 
-      event.states.finishTextAnalysis = false
-    else 
-      event.states.finishTextAnalysis = true
-  }).promise()
+  const getTranscriptionJobResult = await transcribeservice
+    .getTranscriptionJob(params, (err) => {
+      if (err) event.states.finishTextAnalysis = false
+      else event.states.finishTextAnalysis = true
+    })
+    .promise()
 
-  if (event.states.finishTextAnalysis && getTranscriptionJobResult.TranscriptionJob.TranscriptionJobStatus === "COMPLETED") {
-
-    const response = await fetch(getTranscriptionJobResult.TranscriptionJob.Transcript.TranscriptFileUri)
+  if (
+    event.states.finishTextAnalysis &&
+    getTranscriptionJobResult.TranscriptionJob.TranscriptionJobStatus ===
+      "COMPLETED"
+  ) {
+    const response = await fetch(
+      getTranscriptionJobResult.TranscriptionJob.Transcript.TranscriptFileUri
+    )
     const getTranscriptionJobResultTranscript = await response.json()
 
     let firstPronunciationTime = -1
     let lastPronunciationTime = -1
 
     getTranscriptionJobResultTranscript.results.items.forEach((item) => {
-      if (item.type === "pronunciation")
-      {
+      if (item.type === "pronunciation") {
         if (firstPronunciationTime === -1 && item.start_time)
           firstPronunciationTime = item.start_time
-        
-        if (item.end_time)
-          lastPronunciationTime = item.end_time
+
+        if (item.end_time) lastPronunciationTime = item.end_time
       }
     })
 
