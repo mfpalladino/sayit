@@ -10,7 +10,7 @@ Pode ser para enviar mensagens de final de ano a clientes, agradecer um colega p
 
 Esta aplicação foi criada para utilização/validação de conceitos técnicos em um contexto de estudo e disseminação de conhecimento.
 
-Qualquer mensagem passada utilizando o SayIt! **NÃO REFLETE EM NENHUMA HIPÓTESE O POSICIONAMENTO** da Hi Platform ou dos colaboradores deste repositório.
+Qualquer mensagem passada utilizando o SayIt! **NÃO REFLETE EM NENHUMA HIPÓTESE O POSICIONAMENTO** da Hi Platform, seus colaboradores ou mesmo dos colaboradores deste repositório.
 
 # O que foi utilizado aqui?
 

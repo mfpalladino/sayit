@@ -150,6 +150,9 @@ stepFunctions:
             Type: Task
             Resource: !GetAtt startTextAnalysis.Arn
             Next: Wait10sBeforeGetTextAnalysisResult
+            Catch:
+              - ErrorEquals: ["States.ALL"]
+                Next: NotifyInputProcessingFail
           Wait10sBeforeGetTextAnalysisResult:
             Type: Wait
             Seconds: 10
@@ -158,6 +161,9 @@ stepFunctions:
             Type: Task
             Resource: !GetAtt getTextAnalysisResult.Arn
             Next: IsTextAnalysisCompleted
+            Catch:
+              - ErrorEquals: ["States.ALL"]
+                Next: NotifyInputProcessingFail
           IsTextAnalysisCompleted:
             Type: Choice
             Choices:
@@ -171,6 +177,9 @@ stepFunctions:
           CutVideo:
             Type: Task
             Resource: !GetAtt cutVideo.Arn
+            Catch:
+              - ErrorEquals: ["States.ALL"]
+                Next: NotifyInputProcessingFail
             End: true
           NotifyInputProcessingFail:
             Type: Task

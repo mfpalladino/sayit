@@ -10,21 +10,21 @@ module.exports.handler = async (event) => {
     TranscriptionJobName: transactionId,
   }
 
-  event.states.getTextAnalysis = {
+  event.states.getTextAnalysisResult = {
     result = false
   }  
 
   const getTranscriptionJobResult = await transcribeservice
     .getTranscriptionJob(params, (err) => {
       if (!err) 
-        event.states.getTextAnalysis.result = true
+        event.states.getTextAnalysisResult.result = true
     })
     .promise()
 
-  event.states.getTextAnalysis.TranscriptionJobStatus = getTranscriptionJobResult.TranscriptionJob.TranscriptionJobStatus
+  event.states.getTextAnalysisResult.TranscriptionJobStatus = getTranscriptionJobResult.TranscriptionJob.TranscriptionJobStatus
 
   if (
-    event.states.getTextAnalysis.result &&
+    event.states.getTextAnalysisResult.result &&
     getTranscriptionJobResult.TranscriptionJob.TranscriptionJobStatus ===
       "COMPLETED"
   ) {
@@ -45,8 +45,8 @@ module.exports.handler = async (event) => {
       }
     })
 
-    event.states.getTextAnalysis.cutStartTime = firstPronunciationTime * 0.6
-    event.states.getTextAnalysis.cutDurationTime = lastPronunciationTime * 1.4
+    event.states.getTextAnalysisResult.cutStartTime = firstPronunciationTime * 0.6
+    event.states.getTextAnalysisResult.cutDurationTime = lastPronunciationTime * 1.4
   }
 
   return event

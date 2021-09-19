@@ -99,10 +99,10 @@ const putCutItem = (id) => {
   return ddb.putItem(params).promise()
 }
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   const key = event.inputObjectId
-  const cutStartTime = event.cutStartTime
-  const cutDurationTime = event.cutDurationTime
+  const cutStartTime = event.states.getTextAnalysisResult.cutStartTime
+  const cutDurationTime = event.states.getTextAnalysisResult.cutDurationTime
   const workdir = os.tmpdir()
   const inputFile = path.join(workdir, key)
   const outputFile = path.join(workdir, "converted-" + key)

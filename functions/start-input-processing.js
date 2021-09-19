@@ -22,9 +22,10 @@ module.exports.handler = async (event, context) => {
 
   await stepfunctions
     .startExecution(params, (err) => {
-      if (err) {
-        throw Error(`err while executing step function ${err.stack}`)
-      }
+      if (err)
+        throw Error(
+          `error to start input processing step function ${err.stack}`
+        )
     })
     .promise()
 }
