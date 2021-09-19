@@ -10,10 +10,15 @@ provider:
   runtime: nodejs14.x
   region: us-east-1
   stage: dev
+  campaign: devcampaign
   lambdaHashingVersion: 20201221
   environment:
     STAGE: ${self:custom.stage}
+    CAMPAIGN: ${self:custom.campaignId}
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+  stackTags:
+    Environment: ${self:custom.stage}
+    Campaign: ${self:custom.campaign}
 
 package:
   patterns:
@@ -23,134 +28,148 @@ package:
 custom:
   region: ${opt:region, self:provider.region}
   stage: ${opt:stage, self:provider.stage}
+  campaign: ${opt:campaign, self:provider.campaign}
 
 functions:
   startInputProcessing:
     handler: functions/start-input-processing.handler
     events:
-      - s3: 
-          bucket: sayit.input.${self:custom.stage}
-          event: s3:ObjectCreated:*    
+      - s3:
+          bucket: sayit.input.${self:custom.campaign}.${self:custom.stage}
+          event: s3:ObjectCreated:*
     iamRoleStatements:
       - Effect: Allow
         Action:
           - states:StartExecution
-        Resource: 
+        Resource:
           - "*"
     environment:
-      INPUT_BUCKET_NAME: sayit.input.${self:custom.stage}
-      INPUT_BUCKET_URL: http://s3.amazonaws.com/sayit.input.${self:custom.stage}/
+      INPUT_BUCKET_NAME: sayit.input.${self:custom.campaign}.${self:custom.stage}
+      INPUT_BUCKET_URL: http://s3.amazonaws.com/sayit.input.${self:custom.campaign}.${self:custom.stage}/
       INPUT_PROCESSING_STATE_MACHINE_ARN: ${self:resources.Outputs.InputProcessingStateMachine.Value}
 
   startTextAnalysis:
     handler: functions/start-text-analysis.handler
     environment:
-      INPUT_BUCKET_URL: http://s3.amazonaws.com/sayit.input.${self:custom.stage}/
+      INPUT_BUCKET_URL: http://s3.amazonaws.com/sayit.input.${self:custom.campaign}.${self:custom.stage}/
     iamRoleStatements:
       - Effect: Allow
         Action:
           - transcribe:StartTranscriptionJob
-        Resource: 
+        Resource:
           - "*"
       - Effect: Allow
         Action:
           - s3:GetObject
         Resource:
-          - arn:aws:s3:::sayit.input.${self:custom.stage}
-          - arn:aws:s3:::sayit.input.${self:custom.stage}/*
+          - arn:aws:s3:::sayit.input.${self:custom.campaign}.${self:custom.stage}
+          - arn:aws:s3:::sayit.input.${self:custom.campaign}.${self:custom.stage}/*
 
-  finishTextAnalysis:
-    handler: functions/finish-text-analysis.handler
+  getTextAnalysisResult:
+    handler: functions/get-text-analysis-result.handler
     environment:
-      INPUT_BUCKET_URL: http://s3.amazonaws.com/sayit.input.${self:custom.stage}/
+      INPUT_BUCKET_URL: http://s3.amazonaws.com/sayit.input.${self:custom.campaign}.${self:custom.stage}/
     iamRoleStatements:
       - Effect: Allow
         Action:
           - transcribe:GetTranscriptionJob
-        Resource: 
+        Resource:
           - "*"
 
   cutVideo:
     handler: functions/cut-video.handler
     environment:
-      INPUT_BUCKET_NAME: sayit.input.${self:custom.stage}
-      TO_MERGE_BUCKET_NAME: sayit.tomerge.${self:custom.stage}
+      INPUT_BUCKET_NAME: sayit.input.${self:custom.campaign}.${self:custom.stage}
+      TO_MERGE_BUCKET_NAME: sayit.tomerge.${self:custom.campaign}.${self:custom.stage}
       TO_MERGE_TABLE_NAME: !Ref VideosToMergeTable
     iamRoleStatements:
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: 
-          - arn:aws:s3:::sayit.input.${self:custom.stage}
-          - arn:aws:s3:::sayit.input.${self:custom.stage}/*
+        Resource:
+          - arn:aws:s3:::sayit.input.${self:custom.campaign}.${self:custom.stage}
+          - arn:aws:s3:::sayit.input.${self:custom.campaign}.${self:custom.stage}/*
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: 
-          - arn:aws:s3:::sayit.tomerge.${self:custom.stage}
-          - arn:aws:s3:::sayit.tomerge.${self:custom.stage}/*
+        Resource:
+          - arn:aws:s3:::sayit.tomerge.${self:custom.campaign}.${self:custom.stage}
+          - arn:aws:s3:::sayit.tomerge.${self:custom.campaign}.${self:custom.stage}/*
       - Effect: Allow
         Action:
           - dynamodb:PutItem
-        Resource: 
+        Resource:
           - !GetAtt VideosToMergeTable.Arn
 
-  mosaic:
-    handler: functions/mosaic.handler
+  createMosaic:
+    handler: functions/create-mosaic.handler
     reservedConcurrency: 1
     timeout: 120
     environment:
-      TO_PUBLISH_BUCKET_NAME: sayit.topublish.${self:custom.stage}
-      TO_MERGE_BUCKET_NAME: sayit.tomerge.${self:custom.stage}
+      TO_PUBLISH_BUCKET_NAME: sayit.topublish.${self:custom.campaign}.${self:custom.stage}
+      TO_MERGE_BUCKET_NAME: sayit.tomerge.${self:custom.campaign}.${self:custom.stage}
       TO_MERGE_TABLE_NAME: !Ref VideosToMergeTable
       VIDEO_COUNT_TO_MERGE: 25
     events:
-      - s3: 
-          bucket: sayit.tomerge.${self:custom.stage}
+      - s3:
+          bucket: sayit.tomerge.${self:custom.campaign}.${self:custom.stage}
           event: s3:ObjectCreated:*
     iamRoleStatements:
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: 
-          - arn:aws:s3:::sayit.tomerge.${self:custom.stage}
-          - arn:aws:s3:::sayit.tomerge.${self:custom.stage}/*
+        Resource:
+          - arn:aws:s3:::sayit.tomerge.${self:custom.campaign}.${self:custom.stage}
+          - arn:aws:s3:::sayit.tomerge.${self:custom.campaign}.${self:custom.stage}/*
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: 
-          - arn:aws:s3:::sayit.topublish.${self:custom.stage}
-          - arn:aws:s3:::sayit.topublish.${self:custom.stage}/*
+        Resource:
+          - arn:aws:s3:::sayit.topublish.${self:custom.campaign}.${self:custom.stage}
+          - arn:aws:s3:::sayit.topublish.${self:custom.campaign}.${self:custom.stage}/*
       - Effect: Allow
         Action:
           - dynamodb:Query
           - dynamodb:UpdateItem
-        Resource: 
+        Resource:
           - !GetAtt VideosToMergeTable.Arn
-          - !Join [ '/', [ !GetAtt VideosToMergeTable.Arn, 'index', '*' ] ]
+          - !Join ["/", [!GetAtt VideosToMergeTable.Arn, "index", "*"]]
+
+  notifyInputProcessingFail:
+    handler: functions/notify-input-processing-fail.handler
 
 stepFunctions:
   stateMachines:
     inputProcessingStateMachine:
-      name: SayitInputProcessingStateMachine${self:custom.stage}
+      name: SayitInputProcessingStateMachine-${self:custom.campaign}-${self:custom.stage}
       definition:
         StartAt: StartTextAnalysis
         States:
           StartTextAnalysis:
             Type: Task
             Resource: !GetAtt startTextAnalysis.Arn
-            Next: Wait5Seconds
-          Wait5Seconds:
-            Type: Wait
-            Seconds: 60
-            Next: FinishTextAnalysis            
-          FinishTextAnalysis:
+            Next: GetTextAnalysisResult
+          GetTextAnalysisResult:
             Type: Task
-            Resource: !GetAtt finishTextAnalysis.Arn
-            Next: CutVideo
+            Resource: !GetAtt getTextAnalysisResult.Arn
+            Next: IsTextAnalysisCompleted
+          IsTextAnalysisCompleted:
+            Type: Choice
+            Choices:
+              - Variable: "$.states.getTextAnalysis.TranscriptionJobStatus"
+                StringEquals: "COMPLETED"
+                Next: CutVideo
+              - Variable: "$.states.getTextAnalysis.TranscriptionJobStatus"
+                StringEquals: "FAILED"
+                Next: NotifyInputProcessingFail
+            Default: GetTextAnalysisResult
           CutVideo:
             Type: Task
             Resource: !GetAtt cutVideo.Arn
+            End: true
+          NotifyInputProcessingFail:
+            Type: Task
+            Resource: !GetAtt notifyInputProcessingFail.Arn
             End: true
 
 resources:
@@ -158,7 +177,7 @@ resources:
     Bucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: sayit.topublish.${self:custom.stage}
+        BucketName: sayit.topublish.${self:custom.campaign}.${self:custom.stage}
 
     VideosToMergeTable:
       Type: AWS::DynamoDB::Table
@@ -173,10 +192,8 @@ resources:
           - AttributeName: isMerged
             AttributeType: "N"
         Tags:
-          - Key: Environment
-            Value: ${self:custom.stage}
           - Key: Name
-            Value: sayit-videos-to-merged-table
+            Value: sayit-videos-to-merged-table-${self:custom.campaign}-${self:custom.stage}
         GlobalSecondaryIndexes:
           - IndexName: byIsMerged
             KeySchema:
@@ -189,8 +206,7 @@ resources:
   Outputs:
     AwsRegion:
       Value: ${self:custom.region}
-
     InputProcessingStateMachine:
       Description: The ARN of the input processing state machine
       Value:
-        Ref: SayitInputProcessingStateMachine${self:custom.stage}
+        Ref: SayitInputProcessingStateMachine-${self:custom.campaign}-${self:custom.stage}

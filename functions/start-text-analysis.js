@@ -20,12 +20,14 @@ module.exports.handler = async (event) => {
   }
 
   event.states = {
-    startTextAnalysis: false,
+    startTextAnalysis: {
+      result: false,
+    },
   }
 
   await transcribeservice
     .startTranscriptionJob(params, (err) => {
-      if (!err) event.states.startTextAnalysis = true
+      if (!err) event.states.startTextAnalysis.result = true
     })
     .promise()
 
