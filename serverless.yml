@@ -12,6 +12,7 @@ provider:
   stage: dev
   campaign: devcampaign
   lambdaHashingVersion: 20201221
+  stackName: sayit-backend-${self:custom.campaign}-${self:custom.stage}
   environment:
     STAGE: ${self:custom.stage}
     CAMPAIGN: ${self:custom.campaignId}
