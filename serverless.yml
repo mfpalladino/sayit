@@ -149,6 +149,10 @@ stepFunctions:
           StartTextAnalysis:
             Type: Task
             Resource: !GetAtt startTextAnalysis.Arn
+            Next: Wait10sBeforeGetTextAnalysisResult
+          Wait10sBeforeGetTextAnalysisResult:
+            Type: Wait
+            Seconds: 10
             Next: GetTextAnalysisResult
           GetTextAnalysisResult:
             Type: Task
@@ -163,7 +167,7 @@ stepFunctions:
               - Variable: "$.states.getTextAnalysis.TranscriptionJobStatus"
                 StringEquals: "FAILED"
                 Next: NotifyInputProcessingFail
-            Default: GetTextAnalysisResult
+            Default: Wait10sBeforeGetTextAnalysisResult
           CutVideo:
             Type: Task
             Resource: !GetAtt cutVideo.Arn
