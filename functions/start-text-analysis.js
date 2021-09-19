@@ -2,7 +2,7 @@ const aws = require("aws-sdk")
 
 const { INPUT_BUCKET_URL } = process.env
 
-const transcribeservice = new aws.TranscribeService()
+const transcribeService = new aws.TranscribeService()
 
 module.exports.handler = async (event) => {
   console.log(event)
@@ -25,7 +25,7 @@ module.exports.handler = async (event) => {
     },
   }
 
-  await transcribeservice
+  await transcribeService
     .startTranscriptionJob(params, (err) => {
       if (!err) event.states.startTextAnalysis.result = true
     })

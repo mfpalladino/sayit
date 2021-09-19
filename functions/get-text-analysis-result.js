@@ -1,7 +1,7 @@
 const aws = require("aws-sdk")
 const fetch = require("node-fetch")
 
-const transcribeservice = new aws.TranscribeService()
+const transcribeService = new aws.TranscribeService()
 
 module.exports.handler = async (event) => {
   const transactionId = event.transactionId
@@ -14,7 +14,7 @@ module.exports.handler = async (event) => {
     result = false
   }  
 
-  const getTranscriptionJobResult = await transcribeservice
+  const getTranscriptionJobResult = await transcribeService
     .getTranscriptionJob(params, (err) => {
       if (!err) 
         event.states.getTextAnalysisResult.result = true
@@ -28,15 +28,12 @@ module.exports.handler = async (event) => {
     getTranscriptionJobResult.TranscriptionJob.TranscriptionJobStatus ===
       "COMPLETED"
   ) {
-    const response = await fetch(
-      getTranscriptionJobResult.TranscriptionJob.Transcript.TranscriptFileUri
-    )
-    const getTranscriptionJobResultTranscript = await response.json()
+    const getTranscriptionJobResultTranscriptResult = await getTranscriptionJobResultTranscriptResult(getTranscriptionJobResult)
 
     let firstPronunciationTime = -1
     let lastPronunciationTime = -1
 
-    getTranscriptionJobResultTranscript.results.items.forEach((item) => {
+    getTranscriptionJobResultTranscriptResult.results.items.forEach((item) => {
       if (item.type === "pronunciation") {
         if (firstPronunciationTime === -1 && item.start_time)
           firstPronunciationTime = item.start_time
@@ -51,3 +48,12 @@ module.exports.handler = async (event) => {
 
   return event
 }
+
+async function getTranscriptionJobResultTranscript(getTranscriptionJobResult) {
+  const response = await fetch(
+    getTranscriptionJobResult.TranscriptionJob.Transcript.TranscriptFileUri
+  )
+  const getTranscriptionJobResultTranscript = await response.json()
+  return getTranscriptionJobResultTranscript
+}
+
