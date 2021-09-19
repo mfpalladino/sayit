@@ -10,12 +10,12 @@ provider:
   runtime: nodejs14.x
   region: us-east-1
   stage: dev
-  campaign: devcampaign
   lambdaHashingVersion: 20201221
+  campaign: devcampaign
   stackName: sayit-backend-${self:custom.campaign}-${self:custom.stage}
   environment:
     STAGE: ${self:custom.stage}
-    CAMPAIGN: ${self:custom.campaignId}
+    CAMPAIGN: ${self:custom.campaign}
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
   stackTags:
     Environment: ${self:custom.stage}
@@ -142,7 +142,7 @@ functions:
 stepFunctions:
   stateMachines:
     inputProcessingStateMachine:
-      name: SayitInputProcessingStateMachine-${self:custom.campaign}-${self:custom.stage}
+      name: SayitInputProcessingStateMachine${self:custom.campaign}${self:custom.stage}
       definition:
         StartAt: StartTextAnalysis
         States:
@@ -210,4 +210,4 @@ resources:
     InputProcessingStateMachine:
       Description: The ARN of the input processing state machine
       Value:
-        Ref: SayitInputProcessingStateMachine-${self:custom.campaign}-${self:custom.stage}
+        Ref: SayitInputProcessingStateMachine${self:custom.campaign}${self:custom.stage}
